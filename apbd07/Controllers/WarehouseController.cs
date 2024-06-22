@@ -26,6 +26,17 @@ public class WarehouseController : ControllerBase
         return await _whRep.AddProduct(wh);
     }
     
+    [HttpPost("procedure")]
+    public async Task<IActionResult> AddProductUsingStoredProcedure([FromBody] WarehouseDTO wh)
+    {
+        if (wh == null || !IsValidWarehouseDTO(wh))
+        {
+            return BadRequest("Invalid data.");
+        }
+
+        return await _whRep.AddProductUsingProcedure(wh);
+    }
+    
     private bool IsValidWarehouseDTO(WarehouseDTO wh)
     {
         if (wh.IdProduct <= 0 || wh.IdWarehouse <= 0 || wh.Amount <= 0 || wh.CreatedAt == default)

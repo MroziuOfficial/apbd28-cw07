@@ -113,4 +113,39 @@ public class WarehouseRepository : IWarehouseRepository
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
     }
+    public async Task<IActionResult> AddProductUsingProcedure(WarehouseDTO wh)
+    {
+        using SqlConnection connection = new SqlConnection(_config.GetConnectionString("Default"));
+        using SqlCommand command = new SqlCommand("AddProductToWarehouse", connection);
+        command.CommandType = CommandType.StoredProcedure;
+
+        command.Parameters.AddWithValue("@IdProduct", wh.IdProduct);
+        command.Parameters.AddWithValue("@IdWarehouse", wh.IdWarehouse);
+        command.Parameters.AddWithValue("@Amount", wh.Amount);
+        command.Parameters.AddWithValue("@CreatedAt", wh.CreatedAt);
+
+        var newIdOutput = new SqlParameter("@NewId", SqlDbType.Int)
+        {
+            Direction = ParameterDirection.Output
+        };
+        command.Parameters.Add(newIdOutput);
+
+        try
+        {
+            await connection.OpenAsync();
+            await command.ExecuteNonQueryAsync();
+
+            return new OkObjectResult(new { IdProductWarehouse = (int)newIdOutput.Value });
+        }
+        catch (SqlException sqlEx)
+        {
+            Console.WriteLine($"SQL Error: {sqlEx.Message}");
+            return new ObjectResult(new { error = sqlEx.Message }) { StatusCode = StatusCodes.Status500InternalServerError };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            return new ObjectResult(new { error = ex.Message }) { StatusCode = StatusCodes.Status500InternalServerError };
+        }
+    }
 }

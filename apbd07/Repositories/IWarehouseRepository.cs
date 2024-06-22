@@ -6,5 +6,5 @@ namespace apbd07.Repositories;
 public interface IWarehouseRepository
 {
     Task<IActionResult> AddProduct(WarehouseDTO wh);
-    //Task<int> AddProductUsingProcedure(WarehouseDTO wh);
+    Task<IActionResult> AddProductUsingProcedure(WarehouseDTO wh);
 }
