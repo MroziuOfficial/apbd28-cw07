@@ -16,18 +16,22 @@ public class WarehouseController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> addProduct([FromBody] Warehouse wh)
+    public async Task<IActionResult> AddProduct([FromBody] WarehouseDTO wh)
     {
-        int idWarehouse;
-        try
+        if (wh == null || !IsValidWarehouseDTO(wh))
         {
-            idWarehouse = await _whRep.addProduct(wh);
-        }
-        catch (Exception e)
-        {
-            return NotFound(e.Message);
+            return BadRequest("Invalid data.");
         }
 
-        return Ok();
+        return await _whRep.AddProduct(wh);
+    }
+    
+    private bool IsValidWarehouseDTO(WarehouseDTO wh)
+    {
+        if (wh.IdProduct <= 0 || wh.IdWarehouse <= 0 || wh.Amount <= 0 || wh.CreatedAt == default)
+        {
+            return false;
+        }
+        return true;
     }
 }

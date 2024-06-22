@@ -2,7 +2,7 @@
 
 namespace apbd07.Models;
 
-public class Warehouse
+public class WarehouseDTO
 {
     [Required]
     public int IdProduct { get; set; }
